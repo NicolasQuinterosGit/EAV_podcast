@@ -220,7 +220,7 @@ best_episode = merged_df.sort_values(
     by="plays_per_day",
     ascending=False
 ).iloc[0]
-print("\n----- Reporte del analisis de podcasts -----\n")
+print("\n----- Reporte del análisis de podcasts -----\n")
 
 print(f"Total episodios analizados: {total_episodes}")
 
@@ -242,7 +242,7 @@ print("\n----- FIN DEL REPORTE -----\n")
 # region Guardado de reporte en archivo de texto
 
 report = f"""
-PODCAST ANALYSIS REPORT
+Reporte del análisis de podcasts
 
 Total episodios: {total_episodes}
 
