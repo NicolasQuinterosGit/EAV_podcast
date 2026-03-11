@@ -105,7 +105,7 @@ df["title_clean"] = df["title"].apply(clean_title)
 metrics_df["title_clean"] = metrics_df["Title"].apply(clean_title)
 # endregion
 # region Conversor de fechas
-metrics_df["Date"] = pd.to_datetime(metrics_df["Date"], errors="coerce")
+metrics_df["Date"] = pd.to_datetime(metrics_df["Date"], errors="coerce", dayfirst=True)
 # endregion
 # region Convierte reproducciones y descargas a números
 metrics_df["Total_Reproducciones_y_descargas"] = (
@@ -159,9 +159,46 @@ print("Insights:")
 
 # region Duración promedio de los episodios
 print("Duración promedio:", df["duration_minutes"].mean())
+
+bins = [0, 15, 20, 25, 30, 60]
+labels = ["0-15", "15-20", "20-25", "25-30", "30+"]
+
+merged_df["duration_group"] = pd.cut(
+    merged_df["duration_minutes"],
+    bins=bins,
+    labels=labels
+)
+
+group_analysis = merged_df.groupby("duration_group", observed=False)[
+    "Total_Reproducciones_y_descargas"
+].mean()
+
+print(group_analysis)
+# endregion
+# region Normalizacion de antiguedad
+merged_df["days_since_publish"] = (
+    pd.Timestamp.today() - merged_df["published"]
+).dt.days
+
+merged_df["plays_per_day"] = (
+    merged_df["Total_Reproducciones_y_descargas"] /
+    merged_df["days_since_publish"]
+)
+
+top_recent = merged_df.sort_values(
+    by="plays_per_day",
+    ascending=False
+).head(5)
+
+print(top_recent[[
+    "title",
+    "plays_per_day",
+    "duration_minutes"
+]])
 # endregion
 # region Promedio de  días entre episodios
 df["days_between"] = df["published"].diff().dt.days.abs()
 print("Promedio de días entre episodios:", df["days_between"].mean())
 # endregion
+
 # endregion
