@@ -32,7 +32,6 @@ df = pd.DataFrame(episodes)
 df.to_csv("podcast_episodes.csv", index=False)
 print("Los episodios del podcast se guardaron en podcast_episodes.csv")
 
-print(df)
 
 # region normalizar la duración a minutos
 
@@ -173,7 +172,6 @@ group_analysis = merged_df.groupby("duration_group", observed=False)[
     "Total_Reproducciones_y_descargas"
 ].mean()
 
-print(group_analysis)
 # endregion
 # region Normalizacion de antiguedad
 merged_df["days_since_publish"] = (
@@ -198,7 +196,67 @@ print(top_recent[[
 # endregion
 # region Promedio de  días entre episodios
 df["days_between"] = df["published"].diff().dt.days.abs()
-print("Promedio de días entre episodios:", df["days_between"].mean())
+#print("Promedio de días entre episodios:", df["days_between"].mean())
+# endregion
+# region Reporte final
+total_episodes = len(merged_df)
+
+avg_duration = merged_df["duration_minutes"].mean()
+
+merged_df = merged_df.sort_values("published")
+
+merged_df["days_between"] = merged_df["published"].diff().dt.days
+
+avg_frequency = merged_df["days_between"].mean()
+
+best_duration_group = group_analysis.idxmax()
+best_duration_value = group_analysis.max()
+
+best_episode = merged_df.sort_values(
+    by="plays_per_day",
+    ascending=False
+).iloc[0]
+print("\n----- PODCAST ANALYSIS REPORT -----\n")
+
+print(f"Total episodios analizados: {total_episodes}")
+
+print(f"Duración promedio: {avg_duration:.2f} minutos")
+
+print(f"Frecuencia promedio de publicación: {avg_frequency:.2f} días\n")
+
+print(f"Rango de duración con mejor rendimiento: {best_duration_group} min")
+print(f"Promedio de reproducciones en ese rango: {best_duration_value:.0f}\n")
+
+print("Episodio con mejor rendimiento diario:")
+
+print(best_episode["title"])
+print(f"{best_episode['plays_per_day']:.2f} reproducciones por día")
+print(f"Duración: {best_episode['duration_minutes']:.2f} minutos")
+
 # endregion
 
+# Guardado de reporte en archivo de texto
+
+report = f"""
+PODCAST ANALYSIS REPORT
+
+Total episodios: {total_episodes}
+
+Duración promedio: {avg_duration:.2f} minutos
+Frecuencia promedio: {avg_frequency:.2f} días
+
+Mejor rango de duración: {best_duration_group}
+Promedio reproducciones: {best_duration_value:.0f}
+
+Mejor episodio por rendimiento diario:
+{best_episode['title']}
+
+Plays por día: {best_episode['plays_per_day']:.2f}
+Duración: {best_episode['duration_minutes']:.2f}
+"""
+
+with open("podcast_report.txt", "w", encoding="utf-8") as f:
+    f.write(report)
+
+# endregion
 # endregion
