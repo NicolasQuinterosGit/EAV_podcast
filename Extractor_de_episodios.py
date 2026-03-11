@@ -319,6 +319,12 @@ print("Episodio con mejor rendimiento diario:")
 print(best_episode["title"])
 print(f"{best_episode['plays_per_day']:.2f} reproducciones por día")
 print(f"Duración: {best_episode['duration_minutes']:.2f} minutos")
+print("\nINSIGHTS DE TITULOS\n")
+print(question_insight)
+print(guest_insight)
+print(title_length_insight)
+print(f"Palabras más frecuentes en títulos de episodios exitosos: {top_words}")
+
 print("\n----- FIN DEL REPORTE -----\n")
 
 
