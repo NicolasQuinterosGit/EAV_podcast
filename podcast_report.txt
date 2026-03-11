@@ -1,0 +1,30 @@
+
+Reporte del análisis de podcasts
+
+Total episodios: 91
+
+Duración promedio: 18.71 minutos
+Frecuencia promedio: 5.81 días
+
+Mejor rango de duración: 30+
+Promedio reproducciones: 2786
+
+Mejor episodio por rendimiento diario:
+Learn About the Roman Empire in Spanish
+
+Plays por día: 43.18
+Duración: 20.18
+
+INSIGHTS DE TITULOS
+
+Preguntas vs descriptivos:
+Los títulos descriptivos funcionan mejor que las preguntas.
+
+Invitados:
+Los episodios con invitados generan más reproducciones.
+
+Longitud de título:
+Los títulos más cortos tienden a funcionar mejor.
+
+Palabras frecuentes en episodios exitosos:
+spanish, learn, in, my, about, the, ft., at, to, with

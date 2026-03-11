@@ -202,6 +202,89 @@ df["days_between"] = df["published"].diff().dt.days.abs()
 #print("Promedio de días entre episodios:", df["days_between"].mean())
 # endregion
 # endregion
+
+# Region Análisis de titulos
+
+# region Los titulos con preguntas tienen mejor rendimiento?
+merged_df["is_question"] = merged_df["title"].str.contains(r"\?")
+question_analysis = merged_df.groupby("is_question")[
+    "Total_Reproducciones_y_descargas"
+].mean()
+
+print(question_analysis)
+# endregion
+
+# region invitados aumentan reproducciones?
+merged_df["has_guest"] = merged_df["title"].str.contains(
+    r"ft\.|feat|featuring",
+    case=False,
+    regex=True
+)
+
+guest_analysis = merged_df.groupby("has_guest")[
+    "Total_Reproducciones_y_descargas"
+].mean()
+
+print(guest_analysis)
+# endregion
+
+# region titulos largos vs cortos
+merged_df["title_length"] = merged_df["title"].str.len()
+
+title_length_corr = merged_df["title_length"].corr(
+    merged_df["Total_Reproducciones_y_descargas"]
+)
+
+print("Correlación longitud del título vs reproducciones(+ = largos mejor/ - = cortos mejor ):", title_length_corr)
+# endregion
+
+# region palabras clave en títulos
+
+top_episodes = merged_df.sort_values(
+    by="plays_per_day",
+    ascending=False
+).head(20)
+from collections import Counter
+
+words = []
+
+for title in top_episodes["title"]:
+    words.extend(title.lower().split())
+
+word_counts = Counter(words)
+
+print(word_counts.most_common(15))
+# endregion
+
+# -------------------
+# INTERPRETACION INSIGHTS
+# -------------------
+
+question_diff = question_analysis[True] - question_analysis[False]
+
+if question_diff > 0:
+    question_insight = "Los títulos con preguntas generan más reproducciones."
+else:
+    question_insight = "Los títulos descriptivos funcionan mejor que las preguntas."
+
+
+guest_diff = guest_analysis[True] - guest_analysis[False]
+
+if guest_diff > 0:
+    guest_insight = "Los episodios con invitados generan más reproducciones."
+else:
+    guest_insight = "Los episodios sin invitados generan más reproducciones."
+
+
+if title_length_corr > 0:
+    title_length_insight = "Los títulos más largos tienden a funcionar mejor."
+else:
+    title_length_insight = "Los títulos más cortos tienden a funcionar mejor."
+
+
+top_words = ", ".join([word for word, count in word_counts.most_common(10)])
+# endregion
+
 # region Reporte final
 total_episodes = len(merged_df)
 
@@ -257,6 +340,20 @@ Mejor episodio por rendimiento diario:
 
 Plays por día: {best_episode['plays_per_day']:.2f}
 Duración: {best_episode['duration_minutes']:.2f}
+
+INSIGHTS DE TITULOS
+
+Preguntas vs descriptivos:
+{question_insight}
+
+Invitados:
+{guest_insight}
+
+Longitud de título:
+{title_length_insight}
+
+Palabras frecuentes en episodios exitosos:
+{top_words}
 """
 
 with open("podcast_report.txt", "w", encoding="utf-8") as f:
