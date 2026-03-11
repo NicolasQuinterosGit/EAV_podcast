@@ -207,7 +207,7 @@ merged_df = merged_df.sort_values("published")
 
 merged_df["days_between"] = merged_df["published"].diff().dt.days
 
-avg_frequency = merged_df["days_between"].mean()
+avg_frequency = merged_df["days_between"].dropna().mean()
 
 best_duration_group = group_analysis.idxmax()
 best_duration_value = group_analysis.max()
@@ -235,7 +235,7 @@ print(f"Duración: {best_episode['duration_minutes']:.2f} minutos")
 
 # endregion
 
-# Guardado de reporte en archivo de texto
+# region Guardado de reporte en archivo de texto
 
 report = f"""
 PODCAST ANALYSIS REPORT
