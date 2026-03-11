@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import unicodedata
 
-# region -Extracción de episodios del RSS-
+# region Carga de datos
 #Lee el RSS del podcast
 RSS_URL = "https://anchor.fm/s/f9acaa04/podcast/rss"
 
@@ -25,6 +25,7 @@ for entry in feed.entries:
         "published": published,
         "duration": duration
     })
+
 #Pasar a DataFrame
 df = pd.DataFrame(episodes)
 
@@ -62,7 +63,7 @@ df["published"] = pd.to_datetime(df["published"], errors="coerce")
 df = df.sort_values(by="published", ascending=False)
 # endregion
 # endregion
-# endregion
+
 
 # region Carga CSV de métricas de Spotify
 metrics_df = pd.read_csv(
@@ -73,6 +74,7 @@ metrics_df = pd.read_csv(
 
 #print(metrics_df.head())
 #print(metrics_df.columns)
+# endregion
 # endregion
 
 # region -Limpieza de columnas-
@@ -124,6 +126,8 @@ metrics_df["Reproducciones_Spotify"] = (
 # region Filtrado por status "Published"
 #metrics_df = metrics_df[metrics_df["Status"] == "Published"]
 # endregion
+# endregion
+
 # region Merge de DataFrames
 merged_df = pd.merge(
     df,
@@ -132,7 +136,7 @@ merged_df = pd.merge(
     how="inner"
 )
 print("Episodios combinados:", len(merged_df))
-# endregion
+
 # region Debugging del merge
 
     # No se mergearon todos los episodios. Voy a comparar para ver por qué
@@ -153,11 +157,10 @@ print("Episodios combinados:", len(merged_df))
 # endregion
 # endregion
 
-#region -Insights-
-print("Insights:")
+# region Analisis básico
+
 
 # region Duración promedio de los episodios
-print("Duración promedio:", df["duration_minutes"].mean())
 
 bins = [0, 15, 20, 25, 30, 60]
 labels = ["0-15", "15-20", "20-25", "25-30", "30+"]
@@ -198,6 +201,7 @@ print(top_recent[[
 df["days_between"] = df["published"].diff().dt.days.abs()
 #print("Promedio de días entre episodios:", df["days_between"].mean())
 # endregion
+# endregion
 # region Reporte final
 total_episodes = len(merged_df)
 
@@ -216,7 +220,7 @@ best_episode = merged_df.sort_values(
     by="plays_per_day",
     ascending=False
 ).iloc[0]
-print("\n----- PODCAST ANALYSIS REPORT -----\n")
+print("\n----- Reporte del analisis de podcasts -----\n")
 
 print(f"Total episodios analizados: {total_episodes}")
 
@@ -232,8 +236,8 @@ print("Episodio con mejor rendimiento diario:")
 print(best_episode["title"])
 print(f"{best_episode['plays_per_day']:.2f} reproducciones por día")
 print(f"Duración: {best_episode['duration_minutes']:.2f} minutos")
+print("\n----- FIN DEL REPORTE -----\n")
 
-# endregion
 
 # region Guardado de reporte en archivo de texto
 
